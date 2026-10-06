@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/grupos")
-@Tag(name = "Grupos", description = "Gestión de grupos de la escuela")
+@Tag(name = "API Grupos", description = "Gestión de grupos de la escuela")
 public class GrupoController extends CrudController<GrupoRequest, GrupoResponse, GrupoService> {
     public GrupoController(GrupoService service) {
         super(service);

@@ -37,9 +37,9 @@ public class Inscripcion {
     @JoinColumn(name = "ID_GRUPO", nullable = false)
     private Grupo grupo;
     @Column(name = "FECHA_INSCRIPCION", nullable = false)
-    private LocalDate fechaInscripcion;
+    private LocalDate fechaInscripcion = LocalDate.now();
 
-    @OneToOne(mappedBy = "inscripcion", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "inscripcion")
     private Calificacion calificacion;
 
     public void actualizar(Alumno alumno, Grupo grupo) {

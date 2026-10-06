@@ -31,6 +31,6 @@ public enum DiaSemana {
                 return diaSemana;
         }
 
-        throw new DatoInvalidoException("No existe un dia con descripcion: " + description);
+        throw new DatoInvalidoException("No existe un dia con descripción: " + description);
     }
 }

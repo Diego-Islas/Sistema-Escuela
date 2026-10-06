@@ -37,8 +37,8 @@ public class Calificacion {
     @Column(name = "CALIFICACION", nullable = false, precision = 3, scale = 1)
     private BigDecimal calificacion;
 
-    @Column(name = "FECHA_REGISTRO")
-    private LocalDate fechaRegistro;
+    @Column(name = "FECHA_REGISTRO", nullable = false)
+    private LocalDate fechaRegistro = LocalDate.now();
 
     private static void validarDatos(
             Inscripcion inscripcion,

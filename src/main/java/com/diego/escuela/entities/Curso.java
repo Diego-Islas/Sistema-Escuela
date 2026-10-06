@@ -50,7 +50,7 @@ public class Curso {
 
         ValoresNumericosUtils.validarEnteroPositvo(
                 creditos,
-                "El credito es requerido y debe ser positivo"
+                "El crédito es requerido y debe ser positivo"
         );
     }
 

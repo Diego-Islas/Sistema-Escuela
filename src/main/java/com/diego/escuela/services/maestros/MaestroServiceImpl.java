@@ -3,6 +3,9 @@ package com.diego.escuela.services.maestros;
 import com.diego.escuela.dto.datos.DatosCurso;
 import com.diego.escuela.dto.maestros.MaestroRequest;
 import com.diego.escuela.dto.maestros.MaestroResponse;
+import com.diego.escuela.entities.Aula;
+import com.diego.escuela.entities.Curso;
+import com.diego.escuela.entities.Grupo;
 import com.diego.escuela.entities.Maestro;
 import com.diego.escuela.exceptions.ConflictoException;
 import com.diego.escuela.exceptions.EntidadRelacionadaException;
@@ -60,7 +63,7 @@ public class MaestroServiceImpl implements MaestroService {
 
         validarDatosUnicos(maestro, null);
 
-        maestroRepository.save(maestro);
+        maestroRepository.saveAndFlush(maestro);
         log.info("Maestro {} agregado con id: {}", maestro.getNombre(), maestro.getId());
         return maestroMapper.responseAEntidad(maestro);
     }
@@ -79,7 +82,7 @@ public class MaestroServiceImpl implements MaestroService {
 
         validarDatosUnicos(maestro, id);
 
-        maestroRepository.save(maestro);
+        maestroRepository.saveAndFlush(maestro);
 
         log.info("Maestro {} actualizado con id: {}", maestro.getNombre(), maestro.getId());
 
@@ -92,7 +95,7 @@ public class MaestroServiceImpl implements MaestroService {
 
         // Validar si el maestro tiene grupos asignados antes de eliminarlo
         if (grupoRepository.existsByMaestroId(id))
-            throw new EntidadRelacionadaException("No se puede eliminar si tiene grupos asignado");
+            throw new EntidadRelacionadaException("No es posible eliminar el maestro con id " + id + " porque tiene grupos asignados.");
 
         maestroRepository.delete(maestro);
         maestroRepository.flush();
@@ -119,11 +122,17 @@ public class MaestroServiceImpl implements MaestroService {
     }
 
     private void validarDatosUnicos(Maestro maestro, Long id) {
-        if (maestroRepository.existsByEmailAndIdNot(maestro.getEmail(), id))
+        boolean emailDuplicado = id == null
+                ? maestroRepository.existsByEmail(maestro.getEmail())
+                : maestroRepository.existsByEmailAndIdNot(maestro.getEmail(), id);
+        if (emailDuplicado)
             throw new ConflictoException("Email ya existente");
 
-        if (maestroRepository.existsByTelefonoAndIdNot(maestro.getTelefono(), id))
-            throw new ConflictoException("Telefono ya existente");
+        boolean telefonoDuplicado = id == null
+                ? maestroRepository.existsByTelefono(maestro.getTelefono())
+                : maestroRepository.existsByTelefonoAndIdNot(maestro.getTelefono(), id);
+        if (telefonoDuplicado)
+            throw new ConflictoException("Teléfono ya existente");
     }
 
 }

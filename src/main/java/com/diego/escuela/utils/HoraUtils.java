@@ -12,7 +12,6 @@ public class HoraUtils {
         /* This utility class should not be instantiated */
     }
 
-
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT);
 

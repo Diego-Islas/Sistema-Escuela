@@ -44,7 +44,7 @@ public class AulaServiceImpl implements AulaService {
         Aula aula = aulaMapper.requestAEntidad(request);
         validarNombreUnico(aula.getNombre(), null);
 
-        Aula guardada = aulaRepository.save(aula);
+        Aula guardada = aulaRepository.saveAndFlush(aula);
         log.info("Aula {} registrada con id {}", guardada.getNombre(), guardada.getId());
         return aulaMapper.responseAEntidad(guardada);
     }
@@ -56,7 +56,7 @@ public class AulaServiceImpl implements AulaService {
         validarNombreUnico(datos.getNombre(), id);
 
         aula.actualizar(datos.getNombre(), datos.getCapacidad());
-        Aula actualizada = aulaRepository.save(aula);
+        Aula actualizada = aulaRepository.saveAndFlush(aula);
         log.info("Aula {} actualizada con id {}", actualizada.getNombre(), actualizada.getId());
         return aulaMapper.responseAEntidad(actualizada);
     }
@@ -71,6 +71,7 @@ public class AulaServiceImpl implements AulaService {
         }
 
         aulaRepository.delete(aula);
+        aulaRepository.flush();
         log.info("Aula eliminada con id {}", id);
     }
 

@@ -53,7 +53,7 @@ public class GrupoServiceImpl implements GrupoService {
         Aula aula = obtenerAula(request.idAula());
         validarUnicidad(curso.getId(), maestro.getId(), aula.getId(), request.periodo(), null);
 
-        Grupo guardado = grupoRepository.save(
+        Grupo guardado = grupoRepository.saveAndFlush(
                 Grupo.crear(curso, maestro, aula, request.periodo())
         );
         log.info("Grupo registrado con id {}", guardado.getId());
@@ -69,7 +69,7 @@ public class GrupoServiceImpl implements GrupoService {
         validarUnicidad(curso.getId(), maestro.getId(), aula.getId(), request.periodo(), id);
 
         grupo.actualizar(curso, maestro, aula, request.periodo());
-        Grupo actualizado = grupoRepository.save(grupo);
+        Grupo actualizado = grupoRepository.saveAndFlush(grupo);
         log.info("Grupo actualizado con id {}", actualizado.getId());
         return grupoMapper.responseAEntidad(actualizado);
     }
@@ -84,6 +84,7 @@ public class GrupoServiceImpl implements GrupoService {
         }
 
         grupoRepository.delete(grupo);
+        grupoRepository.flush();
         log.info("Grupo eliminado con id {}", id);
     }
 
@@ -112,11 +113,11 @@ public class GrupoServiceImpl implements GrupoService {
     ) {
         boolean existe = idGrupo == null
                 ? grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodo(
-                        idCurso, idMaestro, idAula, periodo
-                )
+                idCurso, idMaestro, idAula, periodo
+        )
                 : grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodoAndIdNot(
-                        idCurso, idMaestro, idAula, periodo, idGrupo
-                );
+                idCurso, idMaestro, idAula, periodo, idGrupo
+        );
         if (existe) {
             throw new ConflictoException(
                     "Ya existe un grupo con el mismo curso, maestro, aula y periodo."

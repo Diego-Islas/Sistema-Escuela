@@ -51,7 +51,7 @@ public class InscripcionServiceImpl implements InscripcionService {
         Grupo grupo = obtenerGrupo(request.idGrupo());
         validarUnicidad(alumno.getId(), grupo.getId(), null);
 
-        Inscripcion guardada = inscripcionRepository.save(Inscripcion.crear(alumno, grupo));
+        Inscripcion guardada = inscripcionRepository.saveAndFlush(Inscripcion.crear(alumno, grupo));
         log.info("Inscripción registrada con id {}", guardada.getId());
         return inscripcionMapper.responseAEntidad(guardada);
     }
@@ -64,7 +64,7 @@ public class InscripcionServiceImpl implements InscripcionService {
         validarUnicidad(alumno.getId(), grupo.getId(), id);
 
         inscripcion.actualizar(alumno, grupo);
-        Inscripcion actualizada = inscripcionRepository.save(inscripcion);
+        Inscripcion actualizada = inscripcionRepository.saveAndFlush(inscripcion);
         log.info("Inscripción actualizada con id {}", actualizada.getId());
         return inscripcionMapper.responseAEntidad(actualizada);
     }
@@ -72,13 +72,14 @@ public class InscripcionServiceImpl implements InscripcionService {
     @Override
     public void eliminar(Long id) {
         Inscripcion inscripcion = obtenerInscripcion(id);
-        if (calificacionRepository.existePorInscripcion(id)) {
+        if (calificacionRepository.existsByInscripcionId(id)) {
             throw new EntidadRelacionadaException(
                     "No se puede eliminar la inscripción porque tiene una calificación asociada."
             );
         }
 
         inscripcionRepository.delete(inscripcion);
+        inscripcionRepository.flush();
         log.info("Inscripción eliminada con id {}", id);
     }
 
@@ -96,8 +97,10 @@ public class InscripcionServiceImpl implements InscripcionService {
 
     private void validarUnicidad(Long idAlumno, Long idGrupo, Long idInscripcion) {
         boolean existe = idInscripcion == null
-                ? inscripcionRepository.existePorAlumnoYGrupo(idAlumno, idGrupo)
-                : inscripcionRepository.existePorAlumnoYGrupoExcluyendo(idAlumno, idGrupo, idInscripcion);
+                ? inscripcionRepository.existsByAlumnoIdAndGrupoId(idAlumno, idGrupo)
+                : inscripcionRepository.existsByAlumnoIdAndGrupoIdAndIdNot(
+                idAlumno, idGrupo, idInscripcion
+        );
         if (existe) {
             throw new ConflictoException("El alumno ya está inscrito en ese grupo.");
         }

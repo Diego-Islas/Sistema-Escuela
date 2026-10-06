@@ -7,7 +7,6 @@ import com.diego.escuela.entities.Curso;
 
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class CursoMapper implements CommonMapper<CursoRequest, CursoResponse, Curso> {
     @Override

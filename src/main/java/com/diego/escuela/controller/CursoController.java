@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/cursos")
-@Tag(name = "Cursos", description = "Gestión de cursos de la escuela")
+@Tag(name = "API Cursos", description = "Gestión de cursos de la escuela")
 public class CursoController extends CrudController<CursoRequest, CursoResponse, CursoService> {
     public CursoController(CursoService service) {
         super(service);

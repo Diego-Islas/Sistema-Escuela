@@ -2,9 +2,15 @@ package com.diego.escuela.utils;
 
 import com.diego.escuela.exceptions.DatoInvalidoException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class StringCustomUtils {
     private StringCustomUtils() {
+        /* This utility class should not be instantiated */
     }
+
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static void validarNoVacio(String texto, String mensaje) {
 
@@ -34,5 +40,9 @@ public class StringCustomUtils {
                 .replace("ú", "u")
                 .replace("ü", "u")
                 .replace("ñ", "n");
+    }
+
+    public static String localDateAsString(LocalDate fecha) {
+        return fecha == null ? null : fecha.format(FORMATO_FECHA);
     }
 }

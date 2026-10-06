@@ -1,16 +1,18 @@
 package com.diego.escuela.entities;
 
 import jakarta.persistence.*;
-import com.diego.escuela.exceptions.DatoInvalidoException;
 import com.diego.escuela.utils.StringCustomUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ALUMNOS", uniqueConstraints = {
@@ -58,9 +60,7 @@ public class Alumno {
     private static void validarDatos(
             String nombre,
             String apellidoPaterno,
-            String apellidoMaterno,
-            String matricula,
-            String email
+            String apellidoMaterno
     ) {
         StringCustomUtils.validarTamanio(nombre, 1, 50,
                 "El nombre es requerido y debe tener entre 1 y 50 caracteres");
@@ -68,27 +68,40 @@ public class Alumno {
                 "El apellido paterno es requerido y debe tener entre 1 y 50 caracteres");
         StringCustomUtils.validarTamanio(apellidoMaterno, 1, 50,
                 "El apellido materno es requerido y debe tener entre 1 y 50 caracteres");
-        StringCustomUtils.validarTamanio(matricula, 1, 10,
-                "La matrícula es requerida y no debe superar 10 caracteres");
-        StringCustomUtils.validarTamanio(email, 1, 100,
-                "El email es requerido y no debe superar 100 caracteres");
+    }
+
+    public boolean cambioEnDatosPersonales(
+            String nombre,
+            String apellidoPaterno,
+            String apellidoMaterno
+    ) {
+
+        validarDatos(nombre, apellidoPaterno, apellidoMaterno);
+
+        return !this.nombre.equals(nombre.trim())
+                || !this.apellidoPaterno.equals(apellidoPaterno.trim())
+                || !this.apellidoMaterno.equals(apellidoMaterno.trim());
+    }
+
+    public void asignarDatosAcademicos(String matricula, String email) {
+        StringCustomUtils.validarTamanio(matricula, 1, 10, "La matrícula es requerida y no debe superar 10 caracteres");
+
+        StringCustomUtils.validarTamanio(email, 1, 100, "El email es requerido y no debe superar 100 caracteres");
+        this.matricula = matricula.trim();
+        this.email = email.trim().toLowerCase();
     }
 
     public static Alumno crear(
             String nombre,
             String apellidoPaterno,
-            String apellidoMaterno,
-            String matricula,
-            String email
+            String apellidoMaterno
     ) {
-        validarDatos(nombre, apellidoPaterno, apellidoMaterno, matricula, email);
+        validarDatos(nombre, apellidoPaterno, apellidoMaterno);
+
         return Alumno.builder()
                 .nombre(nombre.trim())
                 .apellidoPaterno(apellidoPaterno.trim())
                 .apellidoMaterno(apellidoMaterno.trim())
-                .matricula(matricula.trim())
-                .email(email.trim().toLowerCase())
-                .fechaIngreso(LocalDate.now())
                 .build();
     }
 
@@ -99,21 +112,26 @@ public class Alumno {
             String matricula,
             String email
     ) {
-        validarDatos(nombre, apellidoPaterno, apellidoMaterno, matricula, email);
+        asignarDatosAcademicos(matricula, email);
+
         this.nombre = nombre.trim();
         this.apellidoPaterno = apellidoPaterno.trim();
         this.apellidoMaterno = apellidoMaterno.trim();
-        this.matricula = matricula.trim();
-        this.email = email.trim().toLowerCase();
     }
 
-    public void agregarInscripcion(Inscripcion inscripcion) {
-        if (inscripcion != null && !inscripciones.contains(inscripcion)) {
-            inscripciones.add(inscripcion);
+    public BigDecimal calcularPromedio() {
+        List<BigDecimal> calificaciones = inscripciones.stream()
+                .map(Inscripcion::getCalificacion)
+                .filter(Objects::nonNull)
+                .map(Calificacion::getCalificacion)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (calificaciones.isEmpty()) {
+            return BigDecimal.ZERO.setScale(2);
         }
-    }
 
-    public void quitarInscripcion(Inscripcion inscripcion) {
-        inscripciones.remove(inscripcion);
+        BigDecimal suma = calificaciones.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        return suma.divide(BigDecimal.valueOf(calificaciones.size()), 2, RoundingMode.HALF_UP);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/inscripciones")
-@Tag(name = "Inscripciones", description = "Gestión de inscripciones de alumnos")
+@Tag(name = "API Inscripciones", description = "Gestión de inscripciones de alumnos")
 public class InscripcionController
         extends CrudController<InscripcionRequest, InscripcionResponse, InscripcionService> {
     public InscripcionController(InscripcionService service) {

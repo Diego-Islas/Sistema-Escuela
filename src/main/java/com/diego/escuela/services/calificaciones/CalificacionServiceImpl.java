@@ -42,11 +42,11 @@ public class CalificacionServiceImpl implements CalificacionService {
     @Override
     public CalificacionResponse registrar(CalificacionRequest request) {
         Inscripcion inscripcion = obtenerInscripcion(request.idInscripcion());
-        if (calificacionRepository.existePorInscripcion(inscripcion.getId())) {
+        if (calificacionRepository.existsByInscripcionId(inscripcion.getId())) {
             throw new ConflictoException("Ya existe una calificación para esa inscripción.");
         }
 
-        Calificacion guardada = calificacionRepository.save(
+        Calificacion guardada = calificacionRepository.saveAndFlush(
                 Calificacion.crear(inscripcion, request.calificacion())
         );
         log.info("Calificación registrada con id {}", guardada.getId());
@@ -57,12 +57,12 @@ public class CalificacionServiceImpl implements CalificacionService {
     public CalificacionResponse actualizar(CalificacionRequest request, Long id) {
         Calificacion calificacion = obtenerCalificacion(id);
         Inscripcion inscripcion = obtenerInscripcion(request.idInscripcion());
-        if (calificacionRepository.existePorInscripcionExcluyendo(inscripcion.getId(), id)) {
+        if (calificacionRepository.existsByInscripcionIdAndIdNot(inscripcion.getId(), id)) {
             throw new ConflictoException("Ya existe una calificación para esa inscripción.");
         }
 
         calificacion.actualizar(inscripcion, request.calificacion());
-        Calificacion actualizada = calificacionRepository.save(calificacion);
+        Calificacion actualizada = calificacionRepository.saveAndFlush(calificacion);
         log.info("Calificación actualizada con id {}", actualizada.getId());
         return calificacionMapper.responseAEntidad(actualizada);
     }
@@ -72,6 +72,7 @@ public class CalificacionServiceImpl implements CalificacionService {
         Calificacion calificacion = obtenerCalificacion(id);
         calificacion.getInscripcion().quitarCalificacion(calificacion);
         calificacionRepository.delete(calificacion);
+        calificacionRepository.flush();
         log.info("Calificación eliminada con id {}", id);
     }
 

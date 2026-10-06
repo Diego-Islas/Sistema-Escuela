@@ -3,11 +3,10 @@ package com.diego.escuela.mapper;
 import com.diego.escuela.dto.datos.DatosAlumnoInscripcion;
 import com.diego.escuela.dto.datos.DatosGrupoInscripcion;
 import com.diego.escuela.dto.inscripciones.InscripcionResponse;
+import com.diego.escuela.entities.Alumno;
 import com.diego.escuela.entities.Grupo;
 import com.diego.escuela.entities.Inscripcion;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class InscripcionMapper {
@@ -16,8 +15,10 @@ public class InscripcionMapper {
             return null;
         }
 
-        var alumno = inscripcion.getAlumno();
+        Alumno alumno = inscripcion.getAlumno();
+
         Grupo grupo = inscripcion.getGrupo();
+
         return new InscripcionResponse(
                 inscripcion.getId(),
                 new DatosAlumnoInscripcion(

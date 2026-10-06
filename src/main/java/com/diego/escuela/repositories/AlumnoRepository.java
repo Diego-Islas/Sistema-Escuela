@@ -12,20 +12,21 @@ import java.util.Optional;
 
 @Repository
 public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
-    @Query(value = """
+
+    @Query(nativeQuery = true, value = """
             SELECT GENERAR_MATRICULA(:nombre, :apellidoPaterno, :apellidoMaterno)
             FROM DUAL
-            """, nativeQuery = true)
+            """)
     String generarMatricula(
             @Param("nombre") String nombre,
             @Param("apellidoPaterno") String apellidoPaterno,
             @Param("apellidoMaterno") String apellidoMaterno
     );
 
-    @Query(value = """
+    @Query(nativeQuery = true, value = """
             SELECT GENERAR_EMAIL(:nombre, :apellidoPaterno, :apellidoMaterno)
             FROM DUAL
-            """, nativeQuery = true)
+            """)
     String generarEmail(
             @Param("nombre") String nombre,
             @Param("apellidoPaterno") String apellidoPaterno,
@@ -46,10 +47,4 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     })
     Optional<Alumno> findById(Long id);
 
-    @Query("""
-            SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END
-            FROM Inscripcion i
-            WHERE i.alumno.id = :alumnoId
-            """)
-    boolean tieneInscripciones(@Param("alumnoId") Long alumnoId);
 }

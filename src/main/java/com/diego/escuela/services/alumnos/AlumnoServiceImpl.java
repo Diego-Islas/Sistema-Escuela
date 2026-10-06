@@ -6,6 +6,7 @@ import com.diego.escuela.entities.Alumno;
 import com.diego.escuela.exceptions.EntidadRelacionadaException;
 import com.diego.escuela.mapper.AlumnoMapper;
 import com.diego.escuela.repositories.AlumnoRepository;
+import com.diego.escuela.repositories.InscripcionRepository;
 import com.diego.escuela.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,12 @@ import java.util.List;
 public class AlumnoServiceImpl implements AlumnoService {
     private final AlumnoRepository alumnoRepository;
     private final AlumnoMapper alumnoMapper;
+    private final InscripcionRepository inscripcionRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<AlumnoResponse> listar() {
+        log.info("Obteniendo lista de alumnos");
         return alumnoRepository.findAll().stream()
                 .map(alumnoMapper::responseAEntidad)
                 .toList();
@@ -38,63 +41,63 @@ public class AlumnoServiceImpl implements AlumnoService {
 
     @Override
     public AlumnoResponse registrar(AlumnoRequest request) {
-        String matricula = alumnoRepository.generarMatricula(
-                request.nombre(), request.apellidoPaterno(), request.apellidoMaterno()
-        );
-        String email = alumnoRepository.generarEmail(
-                request.nombre(), request.apellidoPaterno(), request.apellidoMaterno()
-        );
-        Alumno guardado = alumnoRepository.save(
-                alumnoMapper.crearEntidad(request, matricula, email)
-        );
-        log.info("Alumno {} registrado con id {}", guardado.getMatricula(), guardado.getId());
-        return alumnoMapper.responseAEntidad(guardado);
+        log.info("Registrando alumno: {} {} {}", request.nombre(), request.apellidoPaterno(), request.apellidoMaterno());
+
+        Alumno alumno = alumnoMapper.requestAEntidad(request, generarMatricula(request), generarEmail(request));
+        alumnoRepository.saveAndFlush(alumno);
+
+        log.info("Alumno registrado con id {}", alumno.getId());
+        return alumnoMapper.responseAEntidad(alumno);
     }
 
     @Override
     public AlumnoResponse actualizar(AlumnoRequest request, Long id) {
         Alumno alumno = obtenerAlumno(id);
-        boolean cambiaronDatosPersonales =
-                !alumno.getNombre().equals(request.nombre().trim())
-                        || !alumno.getApellidoPaterno().equals(request.apellidoPaterno().trim())
-                        || !alumno.getApellidoMaterno().equals(request.apellidoMaterno().trim());
 
-        String matricula = alumno.getMatricula();
-        String email = alumno.getEmail();
-        if (cambiaronDatosPersonales) {
-            matricula = alumnoRepository.generarMatricula(
-                    request.nombre(), request.apellidoPaterno(), request.apellidoMaterno()
+        if (alumno.cambioEnDatosPersonales(request.nombre(),
+                request.apellidoPaterno(),
+                request.apellidoMaterno())) {
+            log.info("Actualizando alumno con id {}", id);
+
+            alumno.actualizar(
+                    request.nombre(),
+                    request.apellidoPaterno(),
+                    request.apellidoMaterno(),
+                    generarMatricula(request),
+                    generarEmail(request)
             );
-            email = alumnoRepository.generarEmail(
-                    request.nombre(), request.apellidoPaterno(), request.apellidoMaterno()
-            );
+
+            alumnoRepository.saveAndFlush(alumno);
+            log.info("Alumno actualizado con id {}", alumno.getId());
         }
 
-        alumno.actualizar(
-                request.nombre(),
-                request.apellidoPaterno(),
-                request.apellidoMaterno(),
-                matricula,
-                email
-        );
-        log.info("Alumno actualizado con id {}", alumno.getId());
         return alumnoMapper.responseAEntidad(alumno);
     }
 
     @Override
     public void eliminar(Long id) {
         Alumno alumno = obtenerAlumno(id);
-        if (alumnoRepository.tieneInscripciones(id)) {
-            throw new EntidadRelacionadaException(
-                    "No se puede eliminar el alumno porque tiene inscripciones asociadas."
-            );
-        }
+        log.info("Eliminando alumno con id {}", id);
+
+        if (inscripcionRepository.existsByAlumnoId(id))
+            throw new EntidadRelacionadaException("No se puede eliminar el alumno porque tiene inscripciones asociadas");
 
         alumnoRepository.delete(alumno);
+        alumnoRepository.flush();
         log.info("Alumno eliminado con id {}", id);
     }
 
     private Alumno obtenerAlumno(Long id) {
         return ServiceUtils.obtenerEntidadOException(alumnoRepository, id, Alumno.class);
+    }
+
+    private String generarMatricula(AlumnoRequest request) {
+        log.info("Generando matrícula para: {} {} {}", request.nombre(), request.apellidoPaterno(), request.apellidoMaterno());
+        return alumnoRepository.generarMatricula(request.nombre(), request.apellidoPaterno(), request.apellidoMaterno());
+    }
+
+    private String generarEmail(AlumnoRequest request) {
+        log.info("Generando email para: {} {} {}", request.nombre(), request.apellidoPaterno(), request.apellidoMaterno());
+        return alumnoRepository.generarEmail(request.nombre(), request.apellidoPaterno(), request.apellidoMaterno());
     }
 }

@@ -50,7 +50,7 @@ public class CursoServiceImpl implements CursoService {
 
         Curso curso = cursoMapper.requestAEntidad(request);
         validarUnicidad(curso.getNombre());
-        Curso guardado = cursoRepository.save(curso);
+        Curso guardado = cursoRepository.saveAndFlush(curso);
 
         log.info("Curso registrado correctamente con id {}", guardado.getId());
 
@@ -67,7 +67,7 @@ public class CursoServiceImpl implements CursoService {
         validarUnicidad(datos.getNombre(), id);
         curso.actualizar(datos.getNombre(), datos.getDescripcion(), datos.getCreditos());
 
-        Curso actualizado = cursoRepository.save(curso);
+        Curso actualizado = cursoRepository.saveAndFlush(curso);
 
         log.info("Curso actualizado correctamente con id {}", actualizado.getId());
 
@@ -87,7 +87,7 @@ public class CursoServiceImpl implements CursoService {
         }
 
         cursoRepository.delete(curso);
-
+        cursoRepository.flush();
         log.info("Curso eliminado correctamente con id {}", id);
     }
 

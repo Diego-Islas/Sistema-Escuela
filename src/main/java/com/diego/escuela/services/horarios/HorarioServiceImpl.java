@@ -52,7 +52,7 @@ public class HorarioServiceImpl implements HorarioService {
         Horario horario = Horario.crear(
                 grupo, dia, request.horaInicio(), request.horaFin()
         );
-        Horario guardado = horarioRepository.save(horario);
+        Horario guardado = horarioRepository.saveAndFlush(horario);
         log.info("Horario registrado con id {}", guardado.getId());
         return horarioMapper.responseAEntidad(guardado);
     }
@@ -66,7 +66,7 @@ public class HorarioServiceImpl implements HorarioService {
         validarSinTraslape(id, grupo, dia, request.horaInicio(), request.horaFin());
 
         horario.actualizar(grupo, dia, request.horaInicio(), request.horaFin());
-        Horario actualizado = horarioRepository.save(horario);
+        Horario actualizado = horarioRepository.saveAndFlush(horario);
         log.info("Horario actualizado con id {}", actualizado.getId());
         return horarioMapper.responseAEntidad(actualizado);
     }
@@ -75,6 +75,7 @@ public class HorarioServiceImpl implements HorarioService {
     public void eliminar(Long id) {
         Horario horario = obtenerHorario(id);
         horarioRepository.delete(horario);
+        horarioRepository.flush();
         log.info("Horario eliminado con id {}", id);
     }
 

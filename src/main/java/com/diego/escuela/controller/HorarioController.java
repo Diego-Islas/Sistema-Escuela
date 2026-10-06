@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/horarios")
-@Tag(name = "Horarios", description = "Gestión de horarios de la escuela")
+@Tag(name = "API Horarios", description = "Gestión de horarios de la escuela")
 public class HorarioController extends CrudController<HorarioRequest, HorarioResponse, HorarioService> {
     public HorarioController(HorarioService service) {
         super(service);

@@ -35,10 +35,7 @@ public class CrudController<RQ, RS, S extends CrudService<RQ, RS>> {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener registro por ID", description = "Obtiene un registro por su ID")
-    // Errores generales que pueden ocurrir en los endpoints
-    @ApiResponse(responseCode = "200", description = "Registro encontrado",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ProblemaDoc.class)))
+    @ApiResponse(responseCode = "200", description = "Registro encontrado")
     @ApiResponse(responseCode = "404", description = "Registro no encontrado",
             content = @Content(mediaType = "application/problem+json",
                     schema = @Schema(implementation = ProblemaDoc.class)))
@@ -51,9 +48,7 @@ public class CrudController<RQ, RS, S extends CrudService<RQ, RS>> {
 
     @PostMapping
     @Operation(summary = "Registrar un nuevo registro", description = "Crea un nuevo registro en la base de datos")
-    @ApiResponse(responseCode = "201", description = "Registro creado exitosamente",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ProblemaDoc.class)))
+    @ApiResponse(responseCode = "201", description = "Registro creado exitosamente")
     @ApiResponse(responseCode = "409", description = "Conflicto al crear el registro (por ejemplo, duplicado)",
             content = @Content(mediaType = "application/problem+json",
                     schema = @Schema(implementation = ProblemaDoc.class)))
@@ -63,9 +58,7 @@ public class CrudController<RQ, RS, S extends CrudService<RQ, RS>> {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un registro existente", description = "Actualiza un registro existente en la base de datos")
-    @ApiResponse(responseCode = "200", description = "Registro actualizado exitosamente",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ProblemaDoc.class)))
+    @ApiResponse(responseCode = "200", description = "Registro actualizado exitosamente")
     @ApiResponse(responseCode = "404", description = "Registro no encontrado",
             content = @Content(mediaType = "application/problem+json",
                     schema = @Schema(implementation = ProblemaDoc.class)))
@@ -79,9 +72,7 @@ public class CrudController<RQ, RS, S extends CrudService<RQ, RS>> {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un registro existente", description = "Elimina un registro existente en la base de datos")
-    @ApiResponse(responseCode = "204", description = "Registro eliminado exitosamente",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ProblemaDoc.class)))
+    @ApiResponse(responseCode = "204", description = "Registro eliminado exitosamente")
     @ApiResponse(responseCode = "404", description = "Registro no encontrado",
             content = @Content(mediaType = "application/problem+json",
                     schema = @Schema(implementation = ProblemaDoc.class)))

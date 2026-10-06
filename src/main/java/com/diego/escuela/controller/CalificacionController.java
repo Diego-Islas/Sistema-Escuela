@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/calificaciones")
-@Tag(name = "Calificaciones", description = "Gestión de calificaciones académicas")
+@Tag(name = "API Calificaciones", description = "Gestión de calificaciones académicas")
 public class CalificacionController
         extends CrudController<CalificacionRequest, CalificacionResponse, CalificacionService> {
     public CalificacionController(CalificacionService service) {
