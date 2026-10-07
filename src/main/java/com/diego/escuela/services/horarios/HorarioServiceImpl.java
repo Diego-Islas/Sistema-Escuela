@@ -102,12 +102,13 @@ public class HorarioServiceImpl implements HorarioService {
             String horaInicio,
             String horaFin
     ) {
-        boolean existeTraslape = idHorario == null
-                ? horarioRepository.existeTraslape(
-                dia, grupo.getId(), grupo.getAula().getId(), horaInicio, horaFin
-        )
-                : horarioRepository.existeTraslapeExcluyendoHorario(
-                idHorario, dia, grupo.getId(), grupo.getAula().getId(), horaInicio, horaFin
+        boolean existeTraslape = horarioRepository.existeTraslape(
+                idHorario,
+                dia,
+                grupo.getId(),
+                grupo.getAula().getId(),
+                horaInicio,
+                horaFin
         );
 
         if (existeTraslape) {
