@@ -17,6 +17,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -109,6 +110,30 @@ class AlumnoControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(alumnoService).eliminar(1L);
+    }
+
+    @Test
+    void postRechazaRequestConDatosPersonalesVacios() throws Exception {
+        mockMvc.perform(post("/api/alumnos")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "nombre": "",
+                                  "apellidoPaterno": "Pérez",
+                                  "apellidoMaterno": "López"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(alumnoService);
+    }
+
+    @Test
+    void getRechazaIdentificadorNoPositivo() throws Exception {
+        mockMvc.perform(get("/api/alumnos/0"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(alumnoService);
     }
 
     private AlumnoResponse respuestaAlumno() {

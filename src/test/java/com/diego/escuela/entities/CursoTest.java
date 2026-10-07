@@ -25,6 +25,14 @@ class CursoTest {
     }
 
     @Test
+    void rechazaDescripcionVacia() {
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> Curso.crear("Matemáticas I", " ", 6)
+        );
+    }
+
+    @Test
     void actualizaSinReemplazarLaEntidad() {
         Curso curso = Curso.crear("Matemáticas I", "Fundamentos", 6);
 

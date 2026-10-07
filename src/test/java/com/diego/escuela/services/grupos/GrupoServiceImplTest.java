@@ -85,9 +85,59 @@ class GrupoServiceImplTest {
     }
 
     @Test
+    void actualizarExcluyeAlGrupoActualAlVerificarUnicidad() {
+        Grupo actual = Grupo.builder().id(10L).build();
+        GrupoRequest request = new GrupoRequest(2L, 7L, 3L, "2026-01");
+        when(grupoRepository.findById(10L)).thenReturn(Optional.of(actual));
+        when(cursoRepository.findById(2L)).thenReturn(Optional.of(Curso.builder().id(2L).build()));
+        when(maestroRepository.findById(7L)).thenReturn(Optional.of(Maestro.builder().id(7L).build()));
+        when(aulaRepository.findById(3L)).thenReturn(Optional.of(Aula.builder().id(3L).build()));
+        when(grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodoAndIdNot(
+                2L, 7L, 3L, "2026-01", 10L
+        )).thenReturn(false);
+        when(grupoRepository.saveAndFlush(actual)).thenReturn(actual);
+
+        service.actualizar(request, 10L);
+
+        verify(grupoRepository).existsByCursoIdAndMaestroIdAndAulaIdAndPeriodoAndIdNot(
+                2L, 7L, 3L, "2026-01", 10L
+        );
+        verify(grupoRepository).saveAndFlush(actual);
+    }
+
+    @Test
+    void actualizarRechazaCombinacionDeOtroGrupo() {
+        Grupo actual = Grupo.builder().id(10L).build();
+        GrupoRequest request = new GrupoRequest(2L, 7L, 3L, "2026-01");
+        when(grupoRepository.findById(10L)).thenReturn(Optional.of(actual));
+        when(cursoRepository.findById(2L)).thenReturn(Optional.of(Curso.builder().id(2L).build()));
+        when(maestroRepository.findById(7L)).thenReturn(Optional.of(Maestro.builder().id(7L).build()));
+        when(aulaRepository.findById(3L)).thenReturn(Optional.of(Aula.builder().id(3L).build()));
+        when(grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodoAndIdNot(
+                2L, 7L, 3L, "2026-01", 10L
+        )).thenReturn(true);
+
+        assertThrows(ConflictoException.class, () -> service.actualizar(request, 10L));
+
+        verify(grupoRepository, never()).saveAndFlush(any(Grupo.class));
+    }
+
+    @Test
     void eliminarRechazaGrupoConInscripciones() {
         Grupo grupo = Grupo.builder().id(10L)
                 .inscripciones(List.of(Inscripcion.builder().build()))
+                .build();
+        when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
+
+        assertThrows(EntidadRelacionadaException.class, () -> service.eliminar(10L));
+
+        verify(grupoRepository, never()).delete(grupo);
+    }
+
+    @Test
+    void eliminarRechazaGrupoConHorarios() {
+        Grupo grupo = Grupo.builder().id(10L)
+                .horarios(List.of(com.diego.escuela.entities.Horario.builder().build()))
                 .build();
         when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
 
@@ -105,5 +155,17 @@ class GrupoServiceImplTest {
 
         verify(grupoRepository).delete(grupo);
         verify(grupoRepository).flush();
+    }
+
+    @Test
+    void listarYObtenerPorIdConsultanRepositorio() {
+        Grupo grupo = Grupo.builder().id(10L).build();
+        when(grupoRepository.findAll()).thenReturn(List.of(grupo));
+        when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
+
+        service.listar();
+        service.obtenerPorId(10L);
+
+        verify(grupoMapper, org.mockito.Mockito.times(2)).responseAEntidad(grupo);
     }
 }

@@ -37,4 +37,29 @@ class MaestroTest {
                 () -> Maestro.crearMaestro("Ana", "Pérez", "López", "ana@escuela.com", "55123A5678")
         );
     }
+
+    @Test
+    void actualizarNormalizaDatos() {
+        Maestro maestro = Maestro.crearMaestro(
+                "Ana", "Pérez", "López", "ana@escuela.com", "5512345678"
+        );
+
+        maestro.actualizarMaestro(
+                " Luis ", " Gómez ", " Ruiz ", " LUIS@ESCUELA.COM ", "5598765432"
+        );
+
+        assertEquals("Luis", maestro.getNombre());
+        assertEquals("Gómez", maestro.getApellidoPaterno());
+        assertEquals("Ruiz", maestro.getApellidoMaterno());
+        assertEquals("luis@escuela.com", maestro.getEmail());
+        assertEquals("5598765432", maestro.getTelefono());
+    }
+
+    @Test
+    void rechazaEmailVacio() {
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> Maestro.crearMaestro("Ana", "Pérez", "López", " ", "5512345678")
+        );
+    }
 }

@@ -19,4 +19,16 @@ class DiaSemanaTest {
                 () -> DiaSemana.obtenerDiaPorDescripcion("Domingo")
         );
     }
+
+    @Test
+    void rechazaDescripcionNulaOVacia() {
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> DiaSemana.obtenerDiaPorDescripcion(null)
+        );
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> DiaSemana.obtenerDiaPorDescripcion(" ")
+        );
+    }
 }
