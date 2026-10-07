@@ -47,7 +47,7 @@ public class CalificacionServiceImpl implements CalificacionService {
         }
 
         Calificacion guardada = calificacionRepository.saveAndFlush(
-                Calificacion.crear(inscripcion, request.calificacion())
+                calificacionMapper.requestAEntidad(request, inscripcion)
         );
         log.info("Calificación registrada con id {}", guardada.getId());
         return calificacionMapper.responseAEntidad(guardada);
@@ -56,12 +56,11 @@ public class CalificacionServiceImpl implements CalificacionService {
     @Override
     public CalificacionResponse actualizar(CalificacionRequest request, Long id) {
         Calificacion calificacion = obtenerCalificacion(id);
-        Inscripcion inscripcion = obtenerInscripcion(request.idInscripcion());
-        if (calificacionRepository.existsByInscripcionIdAndIdNot(inscripcion.getId(), id)) {
+        if (calificacionRepository.existsByInscripcionIdAndIdNot(request.idInscripcion(), id)) {
             throw new ConflictoException("Ya existe una calificación para esa inscripción.");
         }
 
-        calificacion.actualizar(inscripcion, request.calificacion());
+        calificacion.actualizar(obtenerInscripcion(request.idInscripcion()), request.calificacion());
         Calificacion actualizada = calificacionRepository.saveAndFlush(calificacion);
         log.info("Calificación actualizada con id {}", actualizada.getId());
         return calificacionMapper.responseAEntidad(actualizada);

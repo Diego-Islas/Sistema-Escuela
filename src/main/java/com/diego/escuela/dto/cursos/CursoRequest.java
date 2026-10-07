@@ -13,8 +13,7 @@ public record CursoRequest(
         @Size(min = 5, max = 100, message = "El nombre debe tener entre 5 y 100 caracteres")
         String nombre,
 
-        @Schema(description = "Descripción del contenido del curso", example = "Fundamentos matemáticos para nivel básico")
-        @NotBlank(message = "La descripción es requerida")
+        @Schema(description = "Descripción opcional del contenido del curso", example = "Fundamentos matemáticos para nivel básico")
         @Size(max = 200, message = "La descripción no debe superar los 200 caracteres")
         String descripcion,
 

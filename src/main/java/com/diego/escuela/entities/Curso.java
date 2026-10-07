@@ -2,6 +2,7 @@ package com.diego.escuela.entities;
 
 import com.diego.escuela.utils.StringCustomUtils;
 import com.diego.escuela.utils.ValoresNumericosUtils;
+import com.diego.escuela.exceptions.DatoInvalidoException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class Curso {
     @Column(name = "NOMBRE", length = 100, nullable = false, unique = true)
     private String nombre;
 
-    @Column(name = "DESCRIPCION", length = 200, nullable = false)
+    @Column(name = "DESCRIPCION", length = 200)
     private String descripcion;
 
     @Column(name = "CREDITOS", nullable = false)
@@ -43,10 +44,9 @@ public class Curso {
                 "El nombre es requerido y debe tener entre 5 y 100 caracteres"
         );
 
-        StringCustomUtils.validarTamanio(
-                descripcion, 1, 200,
-                "La descripción es requerida y no debe superar los 200 caracteres"
-        );
+        if (descripcion != null && descripcion.length() > 200) {
+            throw new DatoInvalidoException("La descripción no debe superar los 200 caracteres");
+        }
 
         ValoresNumericosUtils.validarEnteroPositvo(
                 creditos,
@@ -62,7 +62,7 @@ public class Curso {
         validarDatos(nombre, descripcion, creditos);
         return Curso.builder()
                 .nombre(nombre.trim())
-                .descripcion(descripcion.trim())
+                .descripcion(normalizarDescripcion(descripcion))
                 .creditos(creditos)
                 .build();
     }
@@ -74,7 +74,14 @@ public class Curso {
     ) {
         validarDatos(nombre, descripcion, creditos);
         this.nombre = nombre.trim();
-        this.descripcion = descripcion.trim();
+        this.descripcion = normalizarDescripcion(descripcion);
         this.creditos = creditos;
+    }
+
+    private static String normalizarDescripcion(String descripcion) {
+        if (descripcion == null || descripcion.isBlank()) {
+            return null;
+        }
+        return descripcion.trim();
     }
 }

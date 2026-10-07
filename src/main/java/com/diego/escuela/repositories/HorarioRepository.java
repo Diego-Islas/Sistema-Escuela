@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HorarioRepository extends JpaRepository<Horario, Long> {
+    boolean existsByGrupoId(Long grupoId);
+
     @Query("""
         SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END
         FROM Horario h

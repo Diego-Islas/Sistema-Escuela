@@ -65,7 +65,6 @@ class AulaServiceImplTest {
         Aula actual = Aula.builder().id(3L).nombre("Aula 101").capacidad(30).build();
         AulaRequest request = new AulaRequest("Aula 202", 25);
         when(aulaRepository.findById(3L)).thenReturn(Optional.of(actual));
-        when(aulaMapper.requestAEntidad(request)).thenReturn(Aula.crear("Aula 202", 25));
         when(aulaRepository.existsByNombreAndIdNot("Aula 202", 3L)).thenReturn(true);
 
         assertThrows(ConflictoException.class, () -> service.actualizar(request, 3L));
@@ -78,7 +77,6 @@ class AulaServiceImplTest {
         Aula actual = Aula.builder().id(3L).nombre("Aula 101").capacidad(30).build();
         AulaRequest request = new AulaRequest("Aula 202", 25);
         when(aulaRepository.findById(3L)).thenReturn(Optional.of(actual));
-        when(aulaMapper.requestAEntidad(request)).thenReturn(Aula.crear("Aula 202", 25));
         when(aulaRepository.existsByNombreAndIdNot("Aula 202", 3L)).thenReturn(false);
         when(aulaRepository.saveAndFlush(actual)).thenReturn(actual);
 

@@ -49,9 +49,7 @@ public class HorarioServiceImpl implements HorarioService {
         validarHoras(request.horaInicio(), request.horaFin());
         validarSinTraslape(null, grupo, dia, request.horaInicio(), request.horaFin());
 
-        Horario horario = Horario.crear(
-                grupo, dia, request.horaInicio(), request.horaFin()
-        );
+        Horario horario = horarioMapper.requestAEntidad(request, grupo, dia);
         Horario guardado = horarioRepository.saveAndFlush(horario);
         log.info("Horario registrado con id {}", guardado.getId());
         return horarioMapper.responseAEntidad(guardado);

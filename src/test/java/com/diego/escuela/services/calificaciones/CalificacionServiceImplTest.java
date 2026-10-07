@@ -20,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,6 +57,9 @@ class CalificacionServiceImplTest {
         Inscripcion inscripcion = Inscripcion.builder().id(15L).build();
         when(inscripcionRepository.findById(15L)).thenReturn(Optional.of(inscripcion));
         when(calificacionRepository.existsByInscripcionId(15L)).thenReturn(false);
+        when(calificacionMapper.requestAEntidad(
+                any(CalificacionRequest.class), eq(inscripcion)
+        )).thenReturn(Calificacion.crear(inscripcion, new BigDecimal("8.5")));
         when(calificacionRepository.saveAndFlush(any(Calificacion.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -72,7 +76,6 @@ class CalificacionServiceImplTest {
         Inscripcion inscripcion = Inscripcion.builder().id(15L).build();
         Calificacion existente = Calificacion.crear(inscripcion, new BigDecimal("7.0"));
         when(calificacionRepository.findById(2L)).thenReturn(Optional.of(existente));
-        when(inscripcionRepository.findById(15L)).thenReturn(Optional.of(inscripcion));
         when(calificacionRepository.existsByInscripcionIdAndIdNot(15L, 2L)).thenReturn(true);
 
         CalificacionRequest request =

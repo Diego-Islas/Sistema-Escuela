@@ -1,6 +1,7 @@
 package com.diego.escuela.mapper;
 
 import com.diego.escuela.dto.calificaciones.CalificacionResponse;
+import com.diego.escuela.dto.calificaciones.CalificacionRequest;
 import com.diego.escuela.dto.datos.DatosAlumnoInscripcion;
 import com.diego.escuela.dto.datos.DatosGrupoInscripcion;
 import com.diego.escuela.dto.datos.DatosInscripcionCalificacion;
@@ -11,6 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CalificacionMapper {
+    public Calificacion requestAEntidad(CalificacionRequest request, Inscripcion inscripcion) {
+        return request == null ? null
+                : Calificacion.crear(inscripcion, request.calificacion());
+    }
+
     public CalificacionResponse responseAEntidad(Calificacion calificacion) {
         if (calificacion == null) {
             return null;
@@ -29,9 +35,7 @@ public class CalificacionMapper {
         );
         DatosGrupoInscripcion datosGrupo = new DatosGrupoInscripcion(
                 grupo.getCurso().getNombre(),
-                String.join(" ", grupo.getMaestro().getNombre(),
-                        grupo.getMaestro().getApellidoPaterno(),
-                        grupo.getMaestro().getApellidoMaterno()),
+                grupo.getMaestro().getNombreCompleto(),
                 grupo.getAula().getNombre(),
                 grupo.getPeriodo()
         );

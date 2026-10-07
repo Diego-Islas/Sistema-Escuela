@@ -12,6 +12,8 @@ import com.diego.escuela.mapper.GrupoMapper;
 import com.diego.escuela.repositories.AulaRepository;
 import com.diego.escuela.repositories.CursoRepository;
 import com.diego.escuela.repositories.GrupoRepository;
+import com.diego.escuela.repositories.HorarioRepository;
+import com.diego.escuela.repositories.InscripcionRepository;
 import com.diego.escuela.repositories.MaestroRepository;
 import com.diego.escuela.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class GrupoServiceImpl implements GrupoService {
     private final MaestroRepository maestroRepository;
     private final AulaRepository aulaRepository;
     private final GrupoMapper grupoMapper;
+    private final InscripcionRepository inscripcionRepository;
+    private final HorarioRepository horarioRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -54,7 +58,7 @@ public class GrupoServiceImpl implements GrupoService {
         validarUnicidad(curso.getId(), maestro.getId(), aula.getId(), request.periodo(), null);
 
         Grupo guardado = grupoRepository.saveAndFlush(
-                Grupo.crear(curso, maestro, aula, request.periodo())
+                grupoMapper.requestAEntidad(request, curso, maestro, aula)
         );
         log.info("Grupo registrado con id {}", guardado.getId());
         return grupoMapper.responseAEntidad(guardado);
@@ -63,12 +67,14 @@ public class GrupoServiceImpl implements GrupoService {
     @Override
     public GrupoResponse actualizar(GrupoRequest request, Long id) {
         Grupo grupo = obtenerGrupo(id);
-        Curso curso = obtenerCurso(request.idCurso());
-        Maestro maestro = obtenerMaestro(request.idMaestro());
-        Aula aula = obtenerAula(request.idAula());
-        validarUnicidad(curso.getId(), maestro.getId(), aula.getId(), request.periodo(), id);
+        validarUnicidad(request.idCurso(), request.idMaestro(), request.idAula(), request.periodo(), id);
 
-        grupo.actualizar(curso, maestro, aula, request.periodo());
+        grupo.actualizar(
+                obtenerCurso(request.idCurso()),
+                obtenerMaestro(request.idMaestro()),
+                obtenerAula(request.idAula()),
+                request.periodo()
+        );
         Grupo actualizado = grupoRepository.saveAndFlush(grupo);
         log.info("Grupo actualizado con id {}", actualizado.getId());
         return grupoMapper.responseAEntidad(actualizado);
@@ -77,7 +83,7 @@ public class GrupoServiceImpl implements GrupoService {
     @Override
     public void eliminar(Long id) {
         Grupo grupo = obtenerGrupo(id);
-        if (!grupo.getInscripciones().isEmpty() || !grupo.getHorarios().isEmpty()) {
+        if (inscripcionRepository.existsByGrupoId(id) || horarioRepository.existsByGrupoId(id)) {
             throw new EntidadRelacionadaException(
                     "No se puede eliminar el grupo porque tiene inscripciones u horarios asociados."
             );

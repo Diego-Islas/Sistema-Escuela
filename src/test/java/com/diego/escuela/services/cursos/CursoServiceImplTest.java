@@ -36,13 +36,12 @@ class CursoServiceImplTest {
     @Test
     void registrarRechazaNombreDuplicado() {
         CursoRequest request = new CursoRequest("Matemáticas I", "Fundamentos", 6);
-        Curso curso = Curso.crear(request.nombre(), request.descripcion(), request.creditos());
-        when(cursoMapper.requestAEntidad(request)).thenReturn(curso);
         when(cursoRepository.existsByNombre("Matemáticas I")).thenReturn(true);
 
         assertThrows(ConflictoException.class, () -> service.registrar(request));
 
-        verify(cursoRepository, never()).save(curso);
+        verify(cursoMapper, never()).requestAEntidad(request);
+        verify(cursoRepository, never()).saveAndFlush(any(Curso.class));
     }
 
     @Test
@@ -65,9 +64,6 @@ class CursoServiceImplTest {
                 .descripcion("Fundamentos").creditos(6).build();
         CursoRequest request = new CursoRequest("Bases de Datos", "Introducción", 5);
         when(cursoRepository.findById(2L)).thenReturn(Optional.of(actual));
-        when(cursoMapper.requestAEntidad(request)).thenReturn(
-                Curso.crear("Bases de Datos", "Introducción", 5)
-        );
         when(cursoRepository.existsByNombreAndIdNot("Bases de Datos", 2L)).thenReturn(true);
 
         assertThrows(ConflictoException.class, () -> service.actualizar(request, 2L));
@@ -81,9 +77,6 @@ class CursoServiceImplTest {
                 .descripcion("Fundamentos").creditos(6).build();
         CursoRequest request = new CursoRequest("Bases de Datos", "Introducción", 5);
         when(cursoRepository.findById(2L)).thenReturn(Optional.of(actual));
-        when(cursoMapper.requestAEntidad(request)).thenReturn(
-                Curso.crear("Bases de Datos", "Introducción", 5)
-        );
         when(cursoRepository.existsByNombreAndIdNot("Bases de Datos", 2L)).thenReturn(false);
         when(cursoRepository.saveAndFlush(actual)).thenReturn(actual);
 

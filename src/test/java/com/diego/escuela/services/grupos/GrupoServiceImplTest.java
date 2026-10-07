@@ -5,7 +5,6 @@ import com.diego.escuela.dto.grupos.GrupoResponse;
 import com.diego.escuela.entities.Aula;
 import com.diego.escuela.entities.Curso;
 import com.diego.escuela.entities.Grupo;
-import com.diego.escuela.entities.Inscripcion;
 import com.diego.escuela.entities.Maestro;
 import com.diego.escuela.exceptions.ConflictoException;
 import com.diego.escuela.exceptions.EntidadRelacionadaException;
@@ -13,6 +12,8 @@ import com.diego.escuela.mapper.GrupoMapper;
 import com.diego.escuela.repositories.AulaRepository;
 import com.diego.escuela.repositories.CursoRepository;
 import com.diego.escuela.repositories.GrupoRepository;
+import com.diego.escuela.repositories.HorarioRepository;
+import com.diego.escuela.repositories.InscripcionRepository;
 import com.diego.escuela.repositories.MaestroRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,10 @@ import static org.mockito.Mockito.*;
 class GrupoServiceImplTest {
     @Mock
     private GrupoRepository grupoRepository;
+    @Mock
+    private InscripcionRepository inscripcionRepository;
+    @Mock
+    private HorarioRepository horarioRepository;
     @Mock
     private CursoRepository cursoRepository;
     @Mock
@@ -58,6 +63,8 @@ class GrupoServiceImplTest {
         when(grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodo(
                 2L, 7L, 3L, "2026-01"
         )).thenReturn(false);
+        when(grupoMapper.requestAEntidad(request, curso, maestro, aula))
+                .thenReturn(Grupo.crear(curso, maestro, aula, request.periodo()));
         when(grupoRepository.saveAndFlush(any(Grupo.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(grupoMapper.responseAEntidad(any(Grupo.class))).thenReturn(response);
 
@@ -108,9 +115,6 @@ class GrupoServiceImplTest {
         Grupo actual = Grupo.builder().id(10L).build();
         GrupoRequest request = new GrupoRequest(2L, 7L, 3L, "2026-01");
         when(grupoRepository.findById(10L)).thenReturn(Optional.of(actual));
-        when(cursoRepository.findById(2L)).thenReturn(Optional.of(Curso.builder().id(2L).build()));
-        when(maestroRepository.findById(7L)).thenReturn(Optional.of(Maestro.builder().id(7L).build()));
-        when(aulaRepository.findById(3L)).thenReturn(Optional.of(Aula.builder().id(3L).build()));
         when(grupoRepository.existsByCursoIdAndMaestroIdAndAulaIdAndPeriodoAndIdNot(
                 2L, 7L, 3L, "2026-01", 10L
         )).thenReturn(true);
@@ -122,10 +126,9 @@ class GrupoServiceImplTest {
 
     @Test
     void eliminarRechazaGrupoConInscripciones() {
-        Grupo grupo = Grupo.builder().id(10L)
-                .inscripciones(List.of(Inscripcion.builder().build()))
-                .build();
+        Grupo grupo = Grupo.builder().id(10L).build();
         when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
+        when(inscripcionRepository.existsByGrupoId(10L)).thenReturn(true);
 
         assertThrows(EntidadRelacionadaException.class, () -> service.eliminar(10L));
 
@@ -134,10 +137,10 @@ class GrupoServiceImplTest {
 
     @Test
     void eliminarRechazaGrupoConHorarios() {
-        Grupo grupo = Grupo.builder().id(10L)
-                .horarios(List.of(com.diego.escuela.entities.Horario.builder().build()))
-                .build();
+        Grupo grupo = Grupo.builder().id(10L).build();
         when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
+        when(inscripcionRepository.existsByGrupoId(10L)).thenReturn(false);
+        when(horarioRepository.existsByGrupoId(10L)).thenReturn(true);
 
         assertThrows(EntidadRelacionadaException.class, () -> service.eliminar(10L));
 
@@ -148,6 +151,8 @@ class GrupoServiceImplTest {
     void eliminarBorraGrupoSinRelaciones() {
         Grupo grupo = Grupo.builder().id(10L).build();
         when(grupoRepository.findById(10L)).thenReturn(Optional.of(grupo));
+        when(inscripcionRepository.existsByGrupoId(10L)).thenReturn(false);
+        when(horarioRepository.existsByGrupoId(10L)).thenReturn(false);
 
         service.eliminar(10L);
 

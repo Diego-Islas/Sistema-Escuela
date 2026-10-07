@@ -11,15 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(
-        name = "CALIFICACIONES",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "CALIFICACION_INSCRIPCION_UK",
-                        columnNames = {"ID_INSCRIPCION"}
-                )
-        }
-)
+@Table(name = "CALIFICACIONES")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

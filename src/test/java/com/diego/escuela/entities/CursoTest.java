@@ -25,11 +25,18 @@ class CursoTest {
     }
 
     @Test
-    void rechazaDescripcionVacia() {
-        assertThrows(
-                DatoInvalidoException.class,
-                () -> Curso.crear("Matemáticas I", " ", 6)
-        );
+    void normalizaDescripcionVaciaComoNula() {
+        Curso curso = Curso.crear("Matemáticas I", " ", 6);
+
+        org.junit.jupiter.api.Assertions.assertNull(curso.getDescripcion());
+    }
+
+    @Test
+    void descripcionPuedeOmitirse() {
+        Curso curso = Curso.crear("Matemáticas I", null, 6);
+
+        assertEquals("Matemáticas I", curso.getNombre());
+        org.junit.jupiter.api.Assertions.assertNull(curso.getDescripcion());
     }
 
     @Test

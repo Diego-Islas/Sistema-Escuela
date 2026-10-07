@@ -76,6 +76,11 @@ class InscripcionServiceImplTest {
         when(alumnoRepository.findById(10L)).thenReturn(Optional.of(alumno));
         when(grupoRepository.findById(5L)).thenReturn(Optional.of(grupo));
         when(inscripcionRepository.existsByAlumnoIdAndGrupoId(10L, 5L)).thenReturn(false);
+        when(inscripcionMapper.requestAEntidad(
+                any(InscripcionRequest.class),
+                org.mockito.ArgumentMatchers.eq(alumno),
+                org.mockito.ArgumentMatchers.eq(grupo)
+        )).thenReturn(Inscripcion.crear(alumno, grupo));
         when(inscripcionRepository.saveAndFlush(any(Inscripcion.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -88,8 +93,6 @@ class InscripcionServiceImplTest {
     void actualizarRechazaCombinacionAlumnoGrupoDuplicada() {
         Inscripcion actual = Inscripcion.builder().id(15L).build();
         when(inscripcionRepository.findById(15L)).thenReturn(Optional.of(actual));
-        when(alumnoRepository.findById(10L)).thenReturn(Optional.of(Alumno.builder().id(10L).build()));
-        when(grupoRepository.findById(5L)).thenReturn(Optional.of(Grupo.builder().id(5L).build()));
         when(inscripcionRepository.existsByAlumnoIdAndGrupoIdAndIdNot(10L, 5L, 15L)).thenReturn(true);
 
         InscripcionRequest request = new InscripcionRequest(10L, 5L);

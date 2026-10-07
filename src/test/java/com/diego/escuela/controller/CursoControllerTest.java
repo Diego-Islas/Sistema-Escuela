@@ -70,6 +70,17 @@ class CursoControllerTest {
     }
 
     @Test
+    void postCursoAceptaDescripcionOmitida() throws Exception {
+        mockMvc.perform(post("/api/cursos").contentType(APPLICATION_JSON)
+                        .content("""
+                                {"nombre":"Bases de Datos","creditos":5}
+                                """))
+                .andExpect(status().isCreated());
+
+        verify(cursoService).registrar(any(CursoRequest.class));
+    }
+
+    @Test
     void putCursoDelegaAlServicioYDevuelve200() throws Exception {
         mockMvc.perform(put("/api/cursos/2").contentType(APPLICATION_JSON)
                         .content("""

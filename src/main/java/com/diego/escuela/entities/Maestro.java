@@ -153,4 +153,8 @@ public class Maestro {
                 .telefono(telefono.trim())
                 .build();
     }
+
+    public String getNombreCompleto() {
+        return String.join(" ", nombre, apellidoPaterno, apellidoMaterno);
+    }
 }

@@ -36,6 +36,19 @@ class HorarioTest {
     }
 
     @Test
+    void rechazaHoraFinMenorQueHoraInicio() {
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> Horario.crear(
+                        Grupo.builder().build(),
+                        DiaSemana.LUNES,
+                        "10:00",
+                        "09:00"
+                )
+        );
+    }
+
+    @Test
     void rechazaHoraConFormatoInvalido() {
         Grupo grupo = Grupo.builder().build();
 

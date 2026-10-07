@@ -51,7 +51,9 @@ public class InscripcionServiceImpl implements InscripcionService {
         Grupo grupo = obtenerGrupo(request.idGrupo());
         validarUnicidad(alumno.getId(), grupo.getId(), null);
 
-        Inscripcion guardada = inscripcionRepository.saveAndFlush(Inscripcion.crear(alumno, grupo));
+        Inscripcion guardada = inscripcionRepository.saveAndFlush(
+                inscripcionMapper.requestAEntidad(request, alumno, grupo)
+        );
         log.info("Inscripción registrada con id {}", guardada.getId());
         return inscripcionMapper.responseAEntidad(guardada);
     }
@@ -59,11 +61,9 @@ public class InscripcionServiceImpl implements InscripcionService {
     @Override
     public InscripcionResponse actualizar(InscripcionRequest request, Long id) {
         Inscripcion inscripcion = obtenerInscripcion(id);
-        Alumno alumno = obtenerAlumno(request.idAlumno());
-        Grupo grupo = obtenerGrupo(request.idGrupo());
-        validarUnicidad(alumno.getId(), grupo.getId(), id);
+        validarUnicidad(request.idAlumno(), request.idGrupo(), id);
 
-        inscripcion.actualizar(alumno, grupo);
+        inscripcion.actualizar(obtenerAlumno(request.idAlumno()), obtenerGrupo(request.idGrupo()));
         Inscripcion actualizada = inscripcionRepository.saveAndFlush(inscripcion);
         log.info("Inscripción actualizada con id {}", actualizada.getId());
         return inscripcionMapper.responseAEntidad(actualizada);

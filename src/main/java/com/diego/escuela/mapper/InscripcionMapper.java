@@ -2,6 +2,7 @@ package com.diego.escuela.mapper;
 
 import com.diego.escuela.dto.datos.DatosAlumnoInscripcion;
 import com.diego.escuela.dto.datos.DatosGrupoInscripcion;
+import com.diego.escuela.dto.inscripciones.InscripcionRequest;
 import com.diego.escuela.dto.inscripciones.InscripcionResponse;
 import com.diego.escuela.entities.Alumno;
 import com.diego.escuela.entities.Grupo;
@@ -10,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InscripcionMapper {
+    public Inscripcion requestAEntidad(InscripcionRequest request, Alumno alumno, Grupo grupo) {
+        return request == null ? null : Inscripcion.crear(alumno, grupo);
+    }
+
     public InscripcionResponse responseAEntidad(Inscripcion inscripcion) {
         if (inscripcion == null) {
             return null;
@@ -31,9 +36,7 @@ public class InscripcionMapper {
                 ),
                 new DatosGrupoInscripcion(
                         grupo.getCurso().getNombre(),
-                        String.join(" ", grupo.getMaestro().getNombre(),
-                                grupo.getMaestro().getApellidoPaterno(),
-                                grupo.getMaestro().getApellidoMaterno()),
+                        grupo.getMaestro().getNombreCompleto(),
                         grupo.getAula().getNombre(),
                         grupo.getPeriodo()
                 ),

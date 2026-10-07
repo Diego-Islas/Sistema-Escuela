@@ -35,9 +35,7 @@ public class MaestroMapper implements CommonMapper<MaestroRequest, MaestroRespon
         return entidad == null ? null :
                 new MaestroResponse(
                         entidad.getId(),
-                        String.join(" ", entidad.getNombre(),
-                                entidad.getApellidoPaterno(),
-                                entidad.getApellidoMaterno()),
+                        entidad.getNombreCompleto(),
                         entidad.getEmail(),
                         entidad.getTelefono(),
                         entidadADaDatosCurso(entidad)

@@ -41,8 +41,8 @@ public class AulaServiceImpl implements AulaService {
 
     @Override
     public AulaResponse registrar(AulaRequest request) {
+        validarNombreUnico(request.nombre().trim(), null);
         Aula aula = aulaMapper.requestAEntidad(request);
-        validarNombreUnico(aula.getNombre(), null);
 
         Aula guardada = aulaRepository.saveAndFlush(aula);
         log.info("Aula {} registrada con id {}", guardada.getNombre(), guardada.getId());
@@ -52,10 +52,9 @@ public class AulaServiceImpl implements AulaService {
     @Override
     public AulaResponse actualizar(AulaRequest request, Long id) {
         Aula aula = obtenerAula(id);
-        Aula datos = aulaMapper.requestAEntidad(request);
-        validarNombreUnico(datos.getNombre(), id);
+        validarNombreUnico(request.nombre().trim(), id);
 
-        aula.actualizar(datos.getNombre(), datos.getCapacidad());
+        aula.actualizar(request.nombre(), request.capacidad());
         Aula actualizada = aulaRepository.saveAndFlush(aula);
         log.info("Aula {} actualizada con id {}", actualizada.getNombre(), actualizada.getId());
         return aulaMapper.responseAEntidad(actualizada);

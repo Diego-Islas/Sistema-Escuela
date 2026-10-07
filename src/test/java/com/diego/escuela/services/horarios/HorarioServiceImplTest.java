@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,6 +83,11 @@ class HorarioServiceImplTest {
                 "08:00",
                 "10:00"
         )).thenReturn(false);
+        when(horarioMapper.requestAEntidad(
+                any(HorarioRequest.class),
+                eq(grupo),
+                eq(DiaSemana.LUNES)
+        )).thenReturn(Horario.crear(grupo, DiaSemana.LUNES, "08:00", "10:00"));
 
         when(horarioRepository.saveAndFlush(any(Horario.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -116,6 +122,26 @@ class HorarioServiceImplTest {
                         any(),
                         any()
                 );
+
+        verify(horarioRepository, never())
+                .saveAndFlush(any(Horario.class));
+    }
+
+    @Test
+    void registrarRechazaHoraFinAnteriorAlInicioAntesDeConsultarTraslapes() {
+        when(grupoRepository.findById(1L))
+                .thenReturn(Optional.of(grupoConAula()));
+
+        HorarioRequest request =
+                new HorarioRequest(1L, "Lunes", "10:00", "09:00");
+
+        assertThrows(
+                DatoInvalidoException.class,
+                () -> service.registrar(request)
+        );
+
+        verify(horarioRepository, never())
+                .existeTraslape(any(), any(), any(), any(), any(), any());
 
         verify(horarioRepository, never())
                 .saveAndFlush(any(Horario.class));

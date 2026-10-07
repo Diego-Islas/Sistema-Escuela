@@ -18,6 +18,7 @@ class MaestroTest {
         );
 
         assertEquals("Ana", maestro.getNombre());
+        assertEquals("Ana Pérez López", maestro.getNombreCompleto());
         assertEquals("ana@escuela.com", maestro.getEmail());
         assertEquals("5512345678", maestro.getTelefono());
     }
