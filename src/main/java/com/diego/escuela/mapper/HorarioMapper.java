@@ -31,7 +31,7 @@ public class HorarioMapper {
         return new HorarioResponse(
                 horario.getId(),
                 datosGrupo,
-                formatearHorario(horario, " ")
+                formatearHorario(horario, " - ")
         );
     }
 
