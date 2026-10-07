@@ -37,9 +37,16 @@ class HorarioTest {
 
     @Test
     void rechazaHoraConFormatoInvalido() {
+        Grupo grupo = Grupo.builder().build();
+
         assertThrows(
                 DatoInvalidoException.class,
-                () -> Horario.crear(Grupo.builder().build(), DiaSemana.LUNES, "8:00", "10:00")
+                () -> Horario.crear(
+                        grupo,
+                        DiaSemana.LUNES,
+                        "8:00",
+                        "10:00"
+                )
         );
     }
 

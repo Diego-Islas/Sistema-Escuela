@@ -16,9 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import java.util.Optional;
 import java.util.List;
 
@@ -128,6 +127,6 @@ class CursoServiceImplTest {
         service.listar();
         service.obtenerPorId(2L);
 
-        verify(cursoMapper, org.mockito.Mockito.times(2)).responseAEntidad(curso);
+        verify(cursoMapper, times(2)).responseAEntidad(curso);
     }
 }

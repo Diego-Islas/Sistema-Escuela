@@ -27,14 +27,16 @@ class CalificacionTest {
     @Test
     void rechazaCalificacionFueraDelRangoOCualquieraNula() {
         Inscripcion inscripcion = Inscripcion.builder().build();
+        BigDecimal calificacionMenor = new BigDecimal("-0.1");
+        BigDecimal calificacionMayor = new BigDecimal("10.1");
 
         assertThrows(
                 DatoInvalidoException.class,
-                () -> Calificacion.crear(inscripcion, new BigDecimal("-0.1"))
+                () -> Calificacion.crear(inscripcion, calificacionMenor)
         );
         assertThrows(
                 DatoInvalidoException.class,
-                () -> Calificacion.crear(inscripcion, new BigDecimal("10.1"))
+                () -> Calificacion.crear(inscripcion, calificacionMayor)
         );
         assertThrows(
                 DatoInvalidoException.class,

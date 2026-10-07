@@ -20,9 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CalificacionServiceImplTest {
@@ -42,9 +40,12 @@ class CalificacionServiceImplTest {
         when(inscripcionRepository.findById(15L)).thenReturn(Optional.of(inscripcion));
         when(calificacionRepository.existsByInscripcionId(15L)).thenReturn(true);
 
+        CalificacionRequest request =
+                new CalificacionRequest(15L, new BigDecimal("8.5"));
+
         assertThrows(
                 ConflictoException.class,
-                () -> service.registrar(new CalificacionRequest(15L, new BigDecimal("8.5")))
+                () -> service.registrar(request)
         );
 
         verify(calificacionRepository, never()).saveAndFlush(any());
@@ -74,9 +75,12 @@ class CalificacionServiceImplTest {
         when(inscripcionRepository.findById(15L)).thenReturn(Optional.of(inscripcion));
         when(calificacionRepository.existsByInscripcionIdAndIdNot(15L, 2L)).thenReturn(true);
 
+        CalificacionRequest request =
+                new CalificacionRequest(15L, new BigDecimal("9.0"));
+
         assertThrows(
                 ConflictoException.class,
-                () -> service.actualizar(new CalificacionRequest(15L, new BigDecimal("9.0")), 2L)
+                () -> service.actualizar(request, 2L)
         );
 
         verify(calificacionRepository, never()).saveAndFlush(any(Calificacion.class));
@@ -122,6 +126,6 @@ class CalificacionServiceImplTest {
         service.listar();
         service.obtenerPorId(2L);
 
-        verify(calificacionMapper, org.mockito.Mockito.times(2)).responseAEntidad(calificacion);
+        verify(calificacionMapper, times(2)).responseAEntidad(calificacion);
     }
 }

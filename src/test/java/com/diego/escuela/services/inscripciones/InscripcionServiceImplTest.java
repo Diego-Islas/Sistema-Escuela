@@ -21,10 +21,8 @@ import java.util.Optional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InscripcionServiceImplTest {
@@ -50,9 +48,11 @@ class InscripcionServiceImplTest {
         when(grupoRepository.findById(5L)).thenReturn(Optional.of(grupo));
         when(inscripcionRepository.existsByAlumnoIdAndGrupoId(10L, 5L)).thenReturn(true);
 
+        InscripcionRequest request = new InscripcionRequest(10L, 5L);
+
         assertThrows(
                 ConflictoException.class,
-                () -> service.registrar(new InscripcionRequest(10L, 5L))
+                () -> service.registrar(request)
         );
 
         verify(inscripcionRepository, never()).saveAndFlush(org.mockito.ArgumentMatchers.any());
@@ -92,9 +92,11 @@ class InscripcionServiceImplTest {
         when(grupoRepository.findById(5L)).thenReturn(Optional.of(Grupo.builder().id(5L).build()));
         when(inscripcionRepository.existsByAlumnoIdAndGrupoIdAndIdNot(10L, 5L, 15L)).thenReturn(true);
 
+        InscripcionRequest request = new InscripcionRequest(10L, 5L);
+
         assertThrows(
                 ConflictoException.class,
-                () -> service.actualizar(new InscripcionRequest(10L, 5L), 15L)
+                () -> service.actualizar(request, 15L)
         );
 
         verify(inscripcionRepository, never()).saveAndFlush(any(Inscripcion.class));
@@ -140,6 +142,6 @@ class InscripcionServiceImplTest {
         service.listar();
         service.obtenerPorId(15L);
 
-        verify(inscripcionMapper, org.mockito.Mockito.times(2)).responseAEntidad(inscripcion);
+        verify(inscripcionMapper, times(2)).responseAEntidad(inscripcion);
     }
 }

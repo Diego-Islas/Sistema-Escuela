@@ -19,9 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AulaServiceImplTest {
@@ -112,6 +110,6 @@ class AulaServiceImplTest {
         service.listar();
         service.obtenerPorId(3L);
 
-        verify(aulaMapper, org.mockito.Mockito.times(2)).responseAEntidad(aula);
+        verify(aulaMapper, times(2)).responseAEntidad(aula);
     }
 }

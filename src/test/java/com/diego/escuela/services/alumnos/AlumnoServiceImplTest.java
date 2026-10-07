@@ -16,10 +16,8 @@ import java.util.Optional;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AlumnoServiceImplTest {
@@ -132,6 +130,6 @@ class AlumnoServiceImplTest {
         service.listar();
         service.obtenerPorId(1L);
 
-        verify(alumnoMapper, org.mockito.Mockito.times(2)).responseAEntidad(alumno);
+        verify(alumnoMapper, times(2)).responseAEntidad(alumno);
     }
 }

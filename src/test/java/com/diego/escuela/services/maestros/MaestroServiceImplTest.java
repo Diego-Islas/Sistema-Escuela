@@ -18,10 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 import java.util.Optional;
 import java.util.List;
 
@@ -167,7 +165,7 @@ class MaestroServiceImplTest {
         var resultado = service.obtenerCursosDeUnMaestroConId(4L);
 
         org.junit.jupiter.api.Assertions.assertEquals(1, resultado.size());
-        verify(cursoRepository).obtenerCursosPorIdMaestro(eq(4L));
+        verify(cursoRepository).obtenerCursosPorIdMaestro(4L);
     }
 
     @Test
@@ -179,6 +177,6 @@ class MaestroServiceImplTest {
         service.listar();
         service.obtenerPorId(4L);
 
-        verify(maestroMapper, org.mockito.Mockito.times(2)).responseAEntidad(maestro);
+        verify(maestroMapper, times(2)).responseAEntidad(maestro);
     }
 }
