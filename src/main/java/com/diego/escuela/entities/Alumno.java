@@ -112,6 +112,7 @@ public class Alumno {
             String matricula,
             String email
     ) {
+        validarDatos(nombre, apellidoPaterno, apellidoMaterno);
         asignarDatosAcademicos(matricula, email);
 
         this.nombre = nombre.trim();

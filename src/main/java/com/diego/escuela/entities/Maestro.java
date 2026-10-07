@@ -90,7 +90,16 @@ public class Maestro {
                 "El email es requerido y debe tener entre 1 y 100 caracteres"
         );
 
-        ValoresNumericosUtils.validarStringSoloNumeros(telefono, "El teléfono es requerido y debe tener 10 dígitos");
+        StringCustomUtils.validarTamanio(
+                telefono,
+                10,
+                10,
+                "El teléfono es requerido y debe tener exactamente 10 dígitos"
+        );
+        ValoresNumericosUtils.validarStringSoloNumeros(
+                telefono,
+                "El teléfono debe contener únicamente dígitos"
+        );
     }
 
 
